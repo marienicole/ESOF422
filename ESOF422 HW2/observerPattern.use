@@ -1,0 +1,36 @@
+-- This is the USE model for a generic Observer pattern.
+
+model ObserverPattern
+
+class Subject
+attributes
+
+operations
+	attach(o:Observer)
+		begin
+		end
+	detach(o:Observer)
+	notify()
+
+
+class Observer	
+attributes
+operations
+	update()
+
+
+class ConcreteSubject
+attributes
+	subjectState:State
+operations
+	getState():State
+	setState(s:State)
+
+
+class ConcreteObserver
+attributes
+	observerState:State
+operations
+	getState():State
+--association observes
+
