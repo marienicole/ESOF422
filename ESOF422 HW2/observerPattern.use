@@ -2,7 +2,9 @@
 
 model ObserverPattern
 
-class Subject
+enum State {regular, different}
+
+abstract class Subject
 attributes
 
 operations
@@ -34,5 +36,14 @@ operations
 	getState():State
 end
 
---association observes
+association observes between
+	ConcreteObserver [0..*] role observes
+	ConcreteSubject [1] role observee
+end
+
+association notifies between
+	Subject [1] role notifier
+	Observer [0..*] role notified
+end
+
 
