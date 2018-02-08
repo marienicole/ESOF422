@@ -15,36 +15,43 @@ operations
 	addRental()
 		begin
 		end
+
 	getName()
-	getAmount(aRen:Rental):Real
+
+-- This is what we have to figure out 
+	getTotalCharge():Real
 		begin
-			declare wrkCh:Real,m:Movie,pc:PriceCode,dy:Integer;
-
-			m:=aRen.getMovie();
-			dy:=aRen.getDaysRented();
-			pc:=m.getPriceCode();
-	
-			wrkCh:=0;
-	
-			if pc=PriceCode::regular then
-				wrkCh:=2.0;
-				if dy > 2 then
-					wrkCh:=wrkCh + (dy - 2) * 1.5;
-				end;
-			end;
-
-			if pc=PriceCode::family then
-				wrkCh:=1.5;
-				if dy > 3 then
-					wrkCh:=wrkCh + (dy - 3) * 1.5;
-				end;
-			end;
-
-			if pc=PriceCode::newRelease then
-				wrkCh:=dy * 3.0;
-			end;
-			result:=wrkCh;
 		end
+
+--	getAmount(aRen:Rental):Real
+--		begin
+--			declare wrkCh:Real,m:Movie,pc:PriceCode,dy:Integer;
+--
+--			m:=aRen.getMovie();
+--			dy:=aRen.getDaysRented();
+--			pc:=m.getPriceCode();
+--	
+--			wrkCh:=0;
+--	
+--			if pc=PriceCode::regular then
+--				wrkCh:=2.0;
+--				if dy > 2 then
+--					wrkCh:=wrkCh + (dy - 2) * 1.5;
+--				end;
+--			end;
+--
+--			if pc=PriceCode::family then
+--				wrkCh:=1.5;
+--				if dy > 3 then
+--					wrkCh:=wrkCh + (dy - 3) * 1.5;
+--				end;
+--			end;
+--
+--			if pc=PriceCode::newRelease then
+--				wrkCh:=dy * 3.0;
+--			end;
+--			result:=wrkCh;
+--		end
 
 	Statement()
 		begin
@@ -74,6 +81,11 @@ operations
 	getMovie(): Movie
 		begin
 			result := self.movie;
+		end
+	
+	getCharge():Charge
+		begin
+			result:=self.charge;
 		end
 end
 
