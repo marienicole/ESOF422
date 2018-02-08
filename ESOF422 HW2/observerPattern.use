@@ -11,13 +11,13 @@ operations
 		end
 	detach(o:Observer)
 	notify()
-
+end
 
 class Observer	
 attributes
 operations
 	update()
-
+end
 
 class ConcreteSubject
 attributes
@@ -25,12 +25,14 @@ attributes
 operations
 	getState():State
 	setState(s:State)
-
+end
 
 class ConcreteObserver
 attributes
 	observerState:State
 operations
 	getState():State
+end
+
 --association observes
 
