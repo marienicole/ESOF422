@@ -23,14 +23,12 @@ operations
 		begin
 			declare runningTotal:Real,ch:Real;
 			for ren in self.rentals do
-<<<<<<< HEAD
 				runningTotal:=runningTotal + ren.getCharge();
 			end
-=======
 				ch := ren.getCharge();
 				runningTotal:=runningTotal + ch;
 			end;
->>>>>>> bf59b1eb55015efc85db1e56886106ea2d864449
+
 			result:=runningTotal;
 		end
 
