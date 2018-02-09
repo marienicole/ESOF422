@@ -21,6 +21,11 @@ operations
 -- This is what we have to figure out
 	getTotalCharge():Real
 		begin
+			declare runningTotal:Real;
+			for ren in self.rentals do
+				runningTotal:=runningTotal + ren.getCharge();
+			end;
+			result:=runningTotal;
 		end
 
 	Statement()
