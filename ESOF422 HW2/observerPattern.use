@@ -25,6 +25,7 @@ end
 
 class ConcreteSubject < Subject
 attributes
+	name:String
 	observers:Set(ConcreteObserver)
 	subjectState:State
 operations
@@ -55,6 +56,7 @@ end
 
 class ConcreteObserver < Observer
 attributes
+	name:String
 	observerState:State
 operations
 	getState():State
