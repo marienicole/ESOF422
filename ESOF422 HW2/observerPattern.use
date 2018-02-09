@@ -2,43 +2,77 @@
 
 model ObserverPattern
 
-enum State {regular, different}
+enum State {state1, state2, state3}
+
+-- classes
 
 abstract class Subject
 attributes
-
+	
 operations
-	attach(o:Observer)
-		begin
-		end
-	detach(o:Observer)
-	notify()
+	attach(o:ConcreteObserver)
+	detach(o:ConcreteObserver)
+	notify(s:State)
 end
 
-class Observer	
+
+abstract class Observer	
 attributes
 operations
-	update()
+	update(s:State)
 end
 
-class ConcreteSubject
+
+class ConcreteSubject < Subject
 attributes
+	observers:Set(ConcreteObserver)
 	subjectState:State
 operations
 	getState():State
 	setState(s:State)
+		begin
+			self.subjectState:=s;
+		end
+	notify(s:State)
+		begin
+			for observer in self.observers do
+				observer.update(s);
+			end;
+		end
+	attach(o:ConcreteObserver)
+		begin
+			for observer in self.observers do
+				o := new ConcreteObserver;
+				self.observers := self.observers->including(o);
+			end;
+		end
+	detach(o:ConcreteObserver)
+		begin
+			self.observers:=self.observers->excluding(o);
+		end
 end
 
-class ConcreteObserver
+
+class ConcreteObserver < Observer
 attributes
 	observerState:State
 operations
 	getState():State
+		begin
+			result:= self.observerState;
+		end
+	update(s:State)
+		begin
+			self.observerState:=s;
+		end
 end
+
+
+-- associations
 
 association observes between
 	ConcreteObserver [0..*] role observes
-	ConcreteSubject [1] role observee
+	ConcreteSubject [1] role observed
 end
 
 association notifies between
@@ -47,3 +81,19 @@ association notifies between
 end
 
 
+constraints
+-- constraints
+
+context ConcreteSubject::attach(o:ConcreteObserver)
+	pre pre1: self.observers->excludes(o)
+	post post1: self.observers->includes(o)
+
+context ConcreteSubject::detach(o:ConcreteObserver)
+	pre pre2: self.observers->includes(o)
+	post post2: self.observers->excludes(o)
+
+context ConcreteSubject::setState(s:State)
+	pre pre3: self.subjectState <> s
+
+context ConcreteObserver::update(s:State)
+	pre pre4: self.observerState <> s
