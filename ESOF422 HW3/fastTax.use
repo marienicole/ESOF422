@@ -5,7 +5,7 @@ model TaxSystem
 
 abstract class ReturnState
 	operations
-		accept(i: Integer)
+		accept(i: Integer, t:TaxReturn)
 		begin
 		end
 		
@@ -17,18 +17,18 @@ end
 /* Class for the notRecieved State */
 class notRecieved < ReturnState
 	operations
-		accept(i : Integer)
+		accept(i : Integer, t:TaxReturn) -- i is the wanted amount of return
 		begin	
 			declare highestReturn:Real;
 			WriteLine('In state:notRecieved operation:accept:');
-			highestReturn := self.taxReturn.salary/10; -- we decided that everyone gets taxed at 10%, no matter what.
+			highestReturn := t.salary/10; -- we decided that everyone gets taxed at 10%, no matter what.
 
            		if (i > 0 and i < highestReturn) then
-             			self.taxReturn.taxState := self.taxReturn.processingState;
+             			t.taxState := t.processingState;
 			end;
 
 			if (i > highestReturn) then
-				self.taxReturn.taxState := self.taxReturn.rejectedState;
+				t.taxState := t.rejectedState;
 			end;
 		end
 
@@ -41,7 +41,7 @@ end
 /* Class for the processing state */
 class processing < ReturnState
         operations
-        	accept(i: Integer)
+        	accept(i: Integer, t:TaxReturn)
         	begin
         		WriteLine('ERROR: ALREADY ACCEPTED, CANNOT SUBMIT TAXES TWICE.'); 
 		end
@@ -55,7 +55,7 @@ end
 /* Class for the rejected state */
 class rejected < ReturnState
         operations
-	        accept(i: Integer)
+	        accept(i: Integer, t:TaxReturn)
         	begin
 			WriteLine('ERROR: CANNOT ACCEPT A REJECTED TAX RETURN');
         	end
@@ -69,7 +69,7 @@ end
 /* Class for the distributed state */
 class distributed < ReturnState
         operations
-	        accept(i: Integer)
+	        accept(i: Integer, t:TaxReturn)
 	        begin
 			WriteLine('ERROR: RETURN ALREADY PROCESSED.')
 	        end
@@ -79,12 +79,42 @@ class distributed < ReturnState
 			WriteLine('ERROR: RETURN ALREADY DISTRIBUTED.')
                 end
 end
+/* Tax Software */
+class TaxSoftware
+	attributes
+		processingReturns:Set(TaxReturn)
+		notRecievedState : ReturnState
+                processingState : ReturnState
+                rejectedState : ReturnState
+                distributedState : ReturnState
+	operations
+	addReturns(t:TaxReturn)
+	begin
+		self.processingReturns := self.processingReturns->including(t)
+	end
+	
+	initInstance()
+	begin
+		
+		self.notRecievedState := new notRecieved;
+                self.processingState := new processing;
+                self.rejectedState := new rejected;
+                self.distributedState := new distributed;
+		for return in self.processingReturns do
+			return.notRecievedState := self.notRecievedState;
+			return.processingState := self.processingState;
+			return.rejectedState := self.rejectedState;
+			return.distributedState := self.distributedState;
+		end;
+	end
+
+end
 		
 /* Class for a Tax Return. */
 class TaxReturn
 	attributes
-		amount : Integer init : 0
-		salary : Integer init: 0
+		amount : Integer
+		salary : Integer
 		taxState : ReturnState
 		notRecievedState : ReturnState
 		processingState : ReturnState
@@ -92,22 +122,16 @@ class TaxReturn
 		distributedState : ReturnState
 
 	operations
-	initInstance()
+	initInstance(i: Integer, j: Integer)
 	begin
-		self.amount := 0;
-		self.salary := 0;
-		self.notRecievedState := new notRecieved;
-		self.processingState := new processing;
-		self.rejectedState := new rejected;
-		self.distributedState := new distributed;
-		
-		self.taxState := self.notRecievedState; -- start in the not recieved state
+		self.amount := i;
+		self.salary := j;
+		self.taxState := self.notRecievedState;
 	end
 	
-	submit(i: Integer)
+	submit()
 	begin
-		self.salary := self.salary + i;
-		self.taxState.accept(i);
+		self.taxState.accept(self.salary, self);
 	end
 	distribute()
 	begin
@@ -119,13 +143,12 @@ end
 -- associations
 association taxState between
 	ReturnState[1]
-	TaxReturn[1]
+	TaxReturn[*]
 end
-
---association userReturn between
---	TaxReturn[*]
---	TaxSoftware[1]
---end
-
+association taxSystem between
+	TaxSoftware [1]
+	TaxReturn [*]
+end
 --constraints
---state machines
+
+
