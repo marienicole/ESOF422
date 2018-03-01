@@ -1,0 +1,106 @@
+model TaxSystem
+/*
+* The Tax System based on what Fast Enterprises told us... or what we can remember at this point.
+*/
+
+abstract class ReturnState
+	operations
+		accept(t:TaxReturn)
+		begin
+		end
+		
+		reject(t:TaxReturn)
+		begin
+		end
+
+		distribute(t:TaxReturn)
+		begin
+		end
+end
+
+/* Class for the notRecieved State */
+class notRecieved < ReturnState
+	operations
+		accept(t:TaxReturn)
+		begin
+		end
+end
+
+/* Class for the processing state */
+class processing < ReturnState
+        operations
+        	accept(t:TaxReturn)
+        	begin
+        	end
+end
+
+/* Class for the rejected state */
+class rejected < ReturnState
+        operations
+	        accept(t:TaxReturn)
+        	begin
+        	end
+end
+
+/* Class for the distributed state */
+class distributed < ReturnState
+        operations
+	        accept(t:TaxReturn)
+	        begin
+	        end
+end
+
+/* Class for the Tax Software. */
+class TaxSoftware
+	attributes
+		processingReturns:Set(TaxReturn) init: Set{} -- initializes tax returns as an empty set
+		rejectedReturns:Set(TaxReturn) init: Set{}
+		distributedReturns:Set(TaxReturn) init: Set{}
+	operations
+		accept(t:TaxReturn)
+		begin
+			self.processingReturns := self.processingReturns->including(t)
+		end
+		
+		reject(t:TaxReturn)
+		begin
+			self.rejectedReturns := self.rejectedReturns->including(t)
+			self.processingReturns := self.processingReturns->excluding(t)
+		end
+		
+		distribute(t:TaxReturn)
+		begin
+			self.distributedReturns := self.distributedReturns->including(t)
+			self.processingReturns := self.processingReturns->excluding(t)
+		end
+end
+		
+/* Class for a Tax Return. */
+class TaxReturn
+	attributes
+		amount : Integer init : 0
+		income : Integer init: 0
+		notRecievedState : ReturnState
+		processingState : ReturnState
+		rejectedState : ReturnState
+		distributedState : ReturnState
+
+	operations
+	initInstance()
+	begin
+		self.amount := 0;
+		self.income := 0;
+		self.notRecievedState := new notRecieved;
+		self.processingState = new processing;
+		self.rejectedState := new rejected;
+		self.distributedState := new distributed;
+		
+		self.taxState := self.notRecievedState; -- start in the not recieved state
+	end
+	
+end
+
+
+-- associations
+--constraints
+--state machines
