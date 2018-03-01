@@ -5,14 +5,10 @@ model TaxSystem
 
 abstract class ReturnState
 	operations
-		accept(t:TaxReturn)
+		accept(return: Integer, salary: Integer)
 		begin
 		end
 		
-		reject(t:TaxReturn)
-		begin
-		end
-
 		distribute(t:TaxReturn)
 		begin
 		end
@@ -21,33 +17,62 @@ end
 /* Class for the notRecieved State */
 class notRecieved < ReturnState
 	operations
-		accept(t:TaxReturn)
-		begin
+		accept(return: Integer, salary: Integer)
+		begin	
+			WriteLine('In state:notRecieved operation:accept:');
+			self.TaxReturn.amount := self.TaxReturn.amount + return;
+		        askedReturn := self.TaxReturn.amount;
+			highestReturn := self.TaxReturn.salary/10; -- we decided that everyone gets taxed at 10%, no matter what.
+
+           		if (askedReturn > 0 and askedReturn < highestReturn) then
+             			self.TaxReturn.returnState := self.TaxReturn.processingState
+           		end;
+
+           		if askedReturn > highestReturn then
+             			self.TaxReturn.returnState := self.TaxReturn.rejectedState
+           		end;
 		end
+
+                distribute(t:TaxReturn)
+                begin
+                end
 end
 
 /* Class for the processing state */
 class processing < ReturnState
         operations
-        	accept(t:TaxReturn)
+        	accept(return: Integer, salary: Integer)
         	begin
         	end
+
+                distribute(t:TaxReturn)
+                begin
+                end
 end
 
 /* Class for the rejected state */
 class rejected < ReturnState
         operations
-	        accept(t:TaxReturn)
+	        accept(return: Integer, salary: Integer)
         	begin
+			WriteLine('ERROR: CANNOT ACCEPT A REJECTED TAX RETURN');
         	end
+
+                distribute(t:TaxReturn)
+                begin
+                end
 end
 
 /* Class for the distributed state */
 class distributed < ReturnState
         operations
-	        accept(t:TaxReturn)
+	        accept(return: Integer, salary: Integer)
 	        begin
 	        end
+
+                distribute(t:TaxReturn)
+                begin
+                end
 end
 
 /* Class for the Tax Software. */
@@ -59,6 +84,7 @@ class TaxSoftware
 	operations
 		accept(t:TaxReturn)
 		begin
+			t.taxState :=
 			self.processingReturns := self.processingReturns->including(t)
 		end
 		
@@ -80,6 +106,7 @@ class TaxReturn
 	attributes
 		amount : Integer init : 0
 		income : Integer init: 0
+		taxState : ReturnState
 		notRecievedState : ReturnState
 		processingState : ReturnState
 		rejectedState : ReturnState
@@ -98,6 +125,12 @@ class TaxReturn
 		self.taxState := self.notRecievedState; -- start in the not recieved state
 	end
 	
+	submit(i: Integer, j: Integer)
+	begin
+		self.amount := self.amount + i;
+		self.income := self.income + j;
+		self.taxState.accept(i,j);
+	end
 end
 
 
