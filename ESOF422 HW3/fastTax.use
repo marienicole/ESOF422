@@ -90,12 +90,12 @@ class TaxSoftware
 	operations
 	addReturns(t:TaxReturn)
 	begin
-		self.processingReturns := self.processingReturns->including(t)
+		self.processingReturns := self.processingReturns->including(t);
+		t.taxState := self.processingState;
 	end
 	
 	initInstance()
 	begin
-		
 		self.notRecievedState := new notRecieved;
                 self.processingState := new processing;
                 self.rejectedState := new rejected;
@@ -126,7 +126,6 @@ class TaxReturn
 	begin
 		self.amount := i;
 		self.salary := j;
-		self.taxState := self.notRecievedState;
 	end
 	
 	submit()
