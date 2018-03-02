@@ -1,0 +1,178 @@
+model FirstPersonShooter
+
+/*
+ * The State pattern interface.
+ */
+abstract class IPlayerState
+ operations
+  accept(i:Integer)
+  begin
+  end
+
+end
+
+class neutral < IPlayerState
+  operations
+   brew()
+   begin
+   end
+end
+
+class attack < IPlayerState
+  operations
+  brew()
+  begin
+  end
+end
+
+class panic < IPlayerState
+  operations
+  brew()
+  begin
+  end
+end
+
+class die < IPlayerState
+  operations
+  brew()
+  begin
+  end
+end
+
+--Level class
+class Level
+  attributes
+    levelName: String
+    players: Player
+end
+
+
+/*
+ * A simple class for a coffee dispenser.
+ */
+class Player
+  attributes
+    health : Integer init : 100
+    character : String
+    currentWeapon: Weapon
+    isDefeatable: Boolean
+    seeOpponent: Boolean
+    playerState : IPlayerState
+    neutralState : IPlayerState
+    attackState : IPlayerState
+    panicState : IPlayerState
+    dieState : IPlayerState
+    weaponsCache: Weapon
+
+  operations
+    /* create a new Player */
+    initInstance()
+    begin
+    self.health := 100;
+    self.neutralState := new neutral;
+    self.attackState := new attack;
+    self.panicState := new panic;
+    self.dieState := new die;
+    self.playerState := self.neutralState; -- start in the neutral state
+    end
+
+    changeWeapon(w: Weapon)
+    begin
+      self.currentWeapon := w
+
+    end
+
+    seeOpponent(p: Player)
+    begin
+      self.isDefeatable := p.isDefeatable;
+      self.seeOpponent := true;
+    end
+
+    loseOpponent()
+    begin
+      self.seeOpponent := false;
+    end
+
+    pray()
+    begin
+    end
+    statemachines
+      /* This state machine describes the
+       * "lifecycle" of the coffee dispenser.
+       */
+      psm Usage
+        states
+          -- The start node
+          startUp:initial [health = 100]
+
+          neutral [seeOpponent = false]
+          panic     [seeOpponent = true and isDefeatable = false]
+          attack  [seeOpponent = true and isDefeatable = true]
+          die [health = 0]
+
+        transitions
+          -- Define the first state after creation.
+          startUp  -> neutral     { create }
+          neutral  -> attack { [isDefeatable = true] seeOpponent() }
+          neutral  -> panic    { [isDefeatable = false] seeOpponent()}
+          panic -> neutral     { loseOpponent() }
+          attack -> neutral { loseOpponent() }
+          panic -> die    { [health = 0] pray() }
+          attack -> die  { [health = 0] pray() }
+      end
+
+end
+
+abstract class Weapon
+  attributes
+    weaponName: String
+  operations
+    useWeapon()
+    begin
+    end
+end
+
+
+class Gun < Weapon
+  attributes
+    ammo: Integer init : 100
+
+  operations
+    useWeapon()
+    begin
+      self.ammo := self.ammo - 1;
+    end
+
+    reload()
+    begin
+      self.ammo := 100;
+    end
+end
+
+
+class Blade < Weapon
+  attributes
+
+  operations
+  useWeapon()
+  begin
+  end
+
+end
+
+
+  -- associations
+association playerState between
+IPlayerState[1]
+Player[1]
+end
+
+association playerWeapons between
+Player[1]
+Weapon[*]
+end
+
+association levelPlayers between
+Level[1]
+Player[*]
+end
