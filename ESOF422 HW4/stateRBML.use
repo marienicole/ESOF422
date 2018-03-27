@@ -1,0 +1,48 @@
+-- RBML for the State Pattern
+
+model StateRBML
+
+-- classes
+
+class Context
+	attributes
+		contextState: State;
+	operations
+		selfContext()
+			begin
+			end
+		getState()
+			begin
+			end
+		setState(state:State)
+			begin
+			end
+end
+
+
+abstract class State
+	attributes
+	operations
+		doAction(state:State)
+			begin
+			end
+end
+
+
+class ConcreteState < State
+	attributes
+	operations
+		doAction(state:State)
+			begin
+			end
+end
+
+
+-- associations
+
+association uses between
+	Context[1..1] role theContext
+	State[1..1] role state
+end
+
+
