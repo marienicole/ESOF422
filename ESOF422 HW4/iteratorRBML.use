@@ -1,0 +1,70 @@
+-- RBML for the iterator pattern
+
+model IteratorRBML
+
+--classes
+
+class ClassifierIterator
+	attributes
+	operations
+		next()
+		hasNext()
+end
+
+class ConcreteIterator < ClassifierIterator
+        attributes
+        operations
+		next()
+		hasNext()
+end
+
+abstract class AbstractIterator < ClassifierIterator
+        attributes
+        operations
+		next()
+		hasNext()
+end
+
+class ClassifierAggregate
+        attributes
+        operations
+		iterator()
+end
+
+class ConcreteAggregate < ClassifierAggregate
+        attributes
+        operations
+		iterator()
+end
+
+abstract class AbstractAggregate < ClassifierAggregate
+        attributes
+        operations
+		iterator()
+end
+
+--associations
+association realizationRole between
+	ClassifierIterator [1] role realizes
+	ClassifierIterator [1] role reaIizes
+end
+
+association generalizationRole between
+	ClassifierIterator [1] role generalizes
+        ClassifierIterator[1]  role generaIizes
+end
+
+association reaIizationRole between
+        ClassifierAggregate [1] role realizes
+        ClassifierAggregate [1] role reaIizes
+end
+
+association generaIizationRole between
+        ClassifierAggregate [1] role generalizes
+        ClassifierAggregate [1]  role generaIizes
+end
+
+aggregation creates between
+	ConcreteAggregate [*] role child
+	ConcreteIterator [1] role parent
+end
